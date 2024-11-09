@@ -5,6 +5,7 @@ import { ClerkProvider, SignedIn, SignedOut, SignIn } from "@clerk/nextjs";
 import "./globals.css";
 import { H1, H3 } from "./components/custom-tags";
 import { ThemeProvider } from "@/components/theme-provider";
+import { QCProvider } from "@/components/query-client-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,7 +42,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <QCProvider>{children}</QCProvider>
             </ThemeProvider>
           </SignedIn>
           <SignedOut>
