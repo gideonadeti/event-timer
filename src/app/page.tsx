@@ -1,3 +1,9 @@
+import { ThemeToggler } from "@/components/theme-toggler";
+
 export default function RootPage() {
-  return <div></div>;
+  return (
+    <div>
+      <ThemeToggler />
+    </div>
+  );
 }
