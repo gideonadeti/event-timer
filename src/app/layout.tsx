@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { ClerkProvider, SignedIn, SignedOut, SignIn } from "@clerk/nextjs";
+import { H1, H3 } from "./components/custom-tags";
+
 import "./globals.css";
 
 const geistSans = localFont({
@@ -29,7 +32,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ClerkProvider>
+          <SignedIn>{children}</SignedIn>
+          <SignedOut>
+            <div className="flex flex-col md:flex-row items-center justify-around gap-8 h-screen overflow-y-auto p-8">
+              <div className="flex flex-col text-center lg:text-left">
+                <H1>Welcome to Event Timer</H1>
+                <H3>
+                  A web app for setting countdowns to future events and
+                  count-ups from past events
+                </H3>
+              </div>
+              <div className="flex items-center justify-center">
+                <SignIn />
+              </div>
+            </div>
+          </SignedOut>
+        </ClerkProvider>
       </body>
     </html>
   );
