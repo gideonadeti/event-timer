@@ -1,9 +1,14 @@
-import { ThemeToggler } from "@/components/theme-toggler";
+"use client";
 
-export default function RootPage() {
-  return (
-    <div>
-      <ThemeToggler />
-    </div>
-  );
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard");
+  });
+
+  return null;
 }
