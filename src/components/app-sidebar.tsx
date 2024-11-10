@@ -12,6 +12,7 @@ import DeleteGroup from "@/app/components/delete-group";
 import CreateEvent from "@/app/components/create-event";
 import { ThemeToggler } from "./theme-toggler";
 import { Button } from "./ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
   SidebarContent,
@@ -34,13 +35,14 @@ import {
 
 export function AppSidebar() {
   const { groupId } = useParams() as { groupId: string };
-  const { data: groups } = useQuery<Group[]>({ queryKey: ["groups"] });
+  const { status, data: groups } = useQuery<Group[]>({ queryKey: ["groups"] });
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const [defaultValue, setDefaultValue] = useState("");
   const [updateGroupId, setUpdateGroupId] = useState("");
   const [openDeleteGroup, setOpenDeleteGroup] = useState(false);
   const [deleteGroupId, setDeleteGroupId] = useState("");
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
+
   const personalGroups = groups?.filter((group) => group.name !== "All") || [];
 
   function handleUpdate(name: string, id: string) {
@@ -83,35 +85,47 @@ export function AppSidebar() {
           </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarMenu>
-              {personalGroups.map((group) => (
-                <SidebarMenuItem key={group.id}>
-                  <SidebarMenuButton asChild isActive={groupId === group.id}>
-                    <Link href={`/groups/${group.id}`}>
-                      {groupId === group.id ? <FolderOpen /> : <FolderClosed />}
-                      <span>{group.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover>
-                        <MoreHorizontal />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() => handleUpdate(group.name, group.id)}
-                      >
-                        <span>Edit</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(group.id)}>
-                        <span>Delete</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              {status === "pending" ? (
+                <SidebarMenuItem>
+                  <Skeleton className="h-8 w-full rounded-md" />
                 </SidebarMenuItem>
-              ))}
+              ) : (
+                personalGroups.map((group) => (
+                  <SidebarMenuItem key={group.id}>
+                    <SidebarMenuButton asChild isActive={groupId === group.id}>
+                      <Link href={`/groups/${group.id}`}>
+                        {groupId === group.id ? (
+                          <FolderOpen />
+                        ) : (
+                          <FolderClosed />
+                        )}
+                        <span>{group.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuAction showOnHover>
+                          <MoreHorizontal />
+                          <span className="sr-only">More</span>
+                        </SidebarMenuAction>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => handleUpdate(group.name, group.id)}
+                        >
+                          <span>Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(group.id)}
+                        >
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
