@@ -6,6 +6,7 @@ import "./globals.css";
 import { H1, H3 } from "./components/custom-tags";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QCProvider } from "@/components/query-client-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -43,6 +44,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <QCProvider>{children}</QCProvider>
+              <Toaster />
             </ThemeProvider>
           </SignedIn>
           <SignedOut>
