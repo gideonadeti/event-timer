@@ -77,3 +77,29 @@ export async function deleteGroup(groupId: string) {
     throw error;
   }
 }
+
+export async function createEvent(
+  title: string,
+  description: string,
+  type: string,
+  date: Date,
+  groupId: string,
+  userId: string
+) {
+  try {
+    const res = await axios.post(`/api/events`, {
+      title,
+      description,
+      type,
+      date,
+      groupId,
+      userId,
+    });
+
+    return res.data.message;
+  } catch (error) {
+    console.error("Error creating event:", error);
+
+    throw error;
+  }
+}

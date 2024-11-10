@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Types } from "@prisma/client";
 
 const prismaClient = new PrismaClient();
 
@@ -105,6 +105,51 @@ export async function deleteGroup(groupId: string) {
     });
   } catch (error) {
     console.error("Error deleting group:", error);
+
+    throw error;
+  }
+}
+
+export async function createEvent(
+  title: string,
+  description: string,
+  type: Types,
+  date: Date,
+  groupId: string,
+  userId: string
+) {
+  try {
+    const event = await prismaClient.event.create({
+      data: {
+        title,
+        description,
+        type,
+        date,
+        groupId,
+        userId,
+      },
+    });
+
+    return event;
+  } catch (error) {
+    console.error("Error creating event:", error);
+
+    throw error;
+  }
+}
+
+export async function readEvent(title: string, groupId: string) {
+  try {
+    const event = await prismaClient.event.findFirst({
+      where: {
+        title,
+        groupId,
+      },
+    });
+
+    return event;
+  } catch (error) {
+    console.error("Error reading event:", error);
 
     throw error;
   }

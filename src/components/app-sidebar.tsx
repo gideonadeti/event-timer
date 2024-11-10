@@ -9,7 +9,9 @@ import { useState } from "react";
 
 import CreateGroup from "@/app/components/create-group";
 import DeleteGroup from "@/app/components/delete-group";
+import CreateEvent from "@/app/components/create-event";
 import { ThemeToggler } from "./theme-toggler";
+import { Button } from "./ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -38,6 +40,7 @@ export function AppSidebar() {
   const [updateGroupId, setUpdateGroupId] = useState("");
   const [openDeleteGroup, setOpenDeleteGroup] = useState(false);
   const [deleteGroupId, setDeleteGroupId] = useState("");
+  const [openCreateEvent, setOpenCreateEvent] = useState(false);
   const personalGroups = groups?.filter((group) => group.name !== "All") || [];
 
   function handleUpdate(name: string, id: string) {
@@ -114,8 +117,11 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarGroup>
+        <SidebarGroup className="flex flex-row items-center justify-between">
           <ThemeToggler />
+          <Button variant="outline" onClick={() => setOpenCreateEvent(true)}>
+            Create Event
+          </Button>
         </SidebarGroup>
         <CreateGroup
           open={openCreateGroup}
@@ -128,6 +134,7 @@ export function AppSidebar() {
           onOpenChange={setOpenDeleteGroup}
           deleteGroupId={deleteGroupId}
         />
+        <CreateEvent open={openCreateEvent} onOpenChange={setOpenCreateEvent} />
       </SidebarFooter>
     </Sidebar>
   );
