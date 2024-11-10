@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FolderClosed, FolderOpen, Plus, MoreHorizontal } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Group } from "@prisma/client";
+import { Group, Event } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -25,6 +25,7 @@ import {
   SidebarGroupAction,
   SidebarFooter,
   SidebarMenuAction,
+  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -36,6 +37,7 @@ import {
 export function AppSidebar() {
   const { groupId } = useParams() as { groupId: string };
   const { status, data: groups } = useQuery<Group[]>({ queryKey: ["groups"] });
+  const { data: events } = useQuery<Event[]>({ queryKey: ["events"] });
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const [defaultValue, setDefaultValue] = useState("");
   const [updateGroupId, setUpdateGroupId] = useState("");
@@ -56,6 +58,18 @@ export function AppSidebar() {
     setOpenDeleteGroup(true);
   }
 
+  function getNumOfEvents(groupId: string) {
+    if (!events) return 0;
+
+    if (groupId === "all") {
+      const allGroupId = groups?.find((group) => group.name === "All")?.id;
+
+      return events.filter((event) => event.groupId === allGroupId).length;
+    } else {
+      return events.filter((event) => event.groupId === groupId).length;
+    }
+  }
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -70,6 +84,9 @@ export function AppSidebar() {
                     <span>All</span>
                   </Link>
                 </SidebarMenuButton>
+                {getNumOfEvents("all") > 0 && (
+                  <SidebarMenuBadge>{getNumOfEvents("all")}</SidebarMenuBadge>
+                )}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -102,6 +119,12 @@ export function AppSidebar() {
                         <span>{group.name}</span>
                       </Link>
                     </SidebarMenuButton>
+
+                    {getNumOfEvents(group.id) > 0 && (
+                      <SidebarMenuBadge className="me-4">
+                        {getNumOfEvents(group.id)}
+                      </SidebarMenuBadge>
+                    )}
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
