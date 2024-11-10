@@ -65,3 +65,15 @@ export async function updateGroup(
     throw error;
   }
 }
+
+export async function deleteGroup(groupId: string) {
+  try {
+    const res = await axios.delete(`/api/groups/${groupId}`);
+
+    return res.data.message;
+  } catch (error) {
+    console.error("Error deleting group:", error);
+
+    throw error;
+  }
+}

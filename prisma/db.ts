@@ -95,3 +95,17 @@ export async function updateGroup(groupId: string, name: string) {
     throw error;
   }
 }
+
+export async function deleteGroup(groupId: string) {
+  try {
+    await prismaClient.group.delete({
+      where: {
+        id: groupId,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting group:", error);
+
+    throw error;
+  }
+}

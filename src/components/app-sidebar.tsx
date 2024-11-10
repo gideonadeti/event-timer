@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import CreateGroup from "@/app/components/create-group";
+import DeleteGroup from "@/app/components/delete-group";
 import { ThemeToggler } from "./theme-toggler";
 import {
   Sidebar,
@@ -35,12 +36,19 @@ export function AppSidebar() {
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const [defaultValue, setDefaultValue] = useState("");
   const [updateGroupId, setUpdateGroupId] = useState("");
+  const [openDeleteGroup, setOpenDeleteGroup] = useState(false);
+  const [deleteGroupId, setDeleteGroupId] = useState("");
   const personalGroups = groups?.filter((group) => group.name !== "All") || [];
 
   function handleUpdate(name: string, id: string) {
     setUpdateGroupId(id);
     setDefaultValue(name);
     setOpenCreateGroup(true);
+  }
+
+  function handleDelete(id: string) {
+    setDeleteGroupId(id);
+    setOpenDeleteGroup(true);
   }
 
   return (
@@ -94,7 +102,7 @@ export function AppSidebar() {
                       >
                         <span>Edit</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(group.id)}>
                         <span>Delete</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -114,6 +122,11 @@ export function AppSidebar() {
           onOpenChange={setOpenCreateGroup}
           defaultValue={defaultValue}
           updateGroupId={updateGroupId}
+        />
+        <DeleteGroup
+          open={openDeleteGroup}
+          onOpenChange={setOpenDeleteGroup}
+          deleteGroupId={deleteGroupId}
         />
       </SidebarFooter>
     </Sidebar>

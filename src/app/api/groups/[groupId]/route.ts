@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readGroup, updateGroup } from "../../../../../prisma/db";
+import { readGroup, updateGroup, deleteGroup } from "../../../../../prisma/db";
 
 export async function PATCH(
   req: NextRequest,
@@ -29,6 +29,29 @@ export async function PATCH(
 
     return NextResponse.json(
       { error: "Something went wrong while updating group" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ groupId: string }> }
+) {
+  const { groupId } = await params;
+
+  try {
+    await deleteGroup(groupId);
+
+    return NextResponse.json(
+      { message: "Group deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting group:", error);
+
+    return NextResponse.json(
+      { error: "Something went wrong while deleting group" },
       { status: 500 }
     );
   }
