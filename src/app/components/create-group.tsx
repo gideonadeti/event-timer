@@ -94,7 +94,7 @@ function CreateGroupForm({
       if (updateGroupId) {
         setTimeout(() => {
           onOpenChange(false);
-        }, 1500);
+        }, 750);
       }
     },
     onError: (error) => {

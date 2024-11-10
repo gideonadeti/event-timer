@@ -37,7 +37,7 @@ export default function DeleteGroup({
 
       setTimeout(() => {
         onOpenChange(false);
-      }, 1500);
+      }, 750);
     },
     onError: (error) => {
       const description =
