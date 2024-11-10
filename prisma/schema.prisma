@@ -25,6 +25,7 @@ model Group {
 
 model Event {
   id          String   @id @default(cuid())
+  userId      String
   groupId     String
   group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   title       String
