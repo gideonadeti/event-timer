@@ -46,3 +46,22 @@ export async function createGroup(userId: string, name: string) {
     throw error;
   }
 }
+
+export async function updateGroup(
+  groupId: string,
+  userId: string,
+  name: string
+) {
+  try {
+    const res = await axios.patch(`/api/groups/${groupId}`, {
+      userId,
+      name,
+    });
+
+    return res.data.message;
+  } catch (error) {
+    console.error("Error updating group:", error);
+
+    throw error;
+  }
+}

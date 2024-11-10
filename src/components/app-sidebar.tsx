@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FolderClosed, FolderOpen, Plus } from "lucide-react";
+import { FolderClosed, FolderOpen, Plus, MoreHorizontal } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Group } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -20,13 +20,28 @@ import {
   SidebarMenuItem,
   SidebarGroupAction,
   SidebarFooter,
+  SidebarMenuAction,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 export function AppSidebar() {
   const { groupId } = useParams() as { groupId: string };
   const { data: groups } = useQuery<Group[]>({ queryKey: ["groups"] });
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
+  const [defaultValue, setDefaultValue] = useState("");
+  const [updateGroupId, setUpdateGroupId] = useState("");
   const personalGroups = groups?.filter((group) => group.name !== "All") || [];
+
+  function handleUpdate(name: string, id: string) {
+    setUpdateGroupId(id);
+    setDefaultValue(name);
+    setOpenCreateGroup(true);
+  }
 
   return (
     <Sidebar>
@@ -65,6 +80,25 @@ export function AppSidebar() {
                       <span>{group.name}</span>
                     </Link>
                   </SidebarMenuButton>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuAction showOnHover>
+                        <MoreHorizontal />
+                        <span className="sr-only">More</span>
+                      </SidebarMenuAction>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => handleUpdate(group.name, group.id)}
+                      >
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -75,7 +109,12 @@ export function AppSidebar() {
         <SidebarGroup>
           <ThemeToggler />
         </SidebarGroup>
-        <CreateGroup open={openCreateGroup} onOpenChange={setOpenCreateGroup} />
+        <CreateGroup
+          open={openCreateGroup}
+          onOpenChange={setOpenCreateGroup}
+          defaultValue={defaultValue}
+          updateGroupId={updateGroupId}
+        />
       </SidebarFooter>
     </Sidebar>
   );

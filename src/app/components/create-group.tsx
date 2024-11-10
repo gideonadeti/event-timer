@@ -7,7 +7,7 @@ import { AxiosError } from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createGroup } from "@/app/query-functions";
+import { createGroup, updateGroup } from "@/app/query-functions";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -31,41 +31,71 @@ const formSchema = z.object({
 export default function CreateGroup({
   open,
   onOpenChange,
+  defaultValue,
+  updateGroupId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultValue: string;
+  updateGroupId: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Group</DialogTitle>
+          <DialogTitle>
+            {updateGroupId ? "Update Group" : "Create Group"}
+          </DialogTitle>
         </DialogHeader>
-        <CreateGroupForm />
+        <CreateGroupForm
+          defaultValue={defaultValue}
+          updateGroupId={updateGroupId}
+          onOpenChange={onOpenChange}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function CreateGroupForm() {
+function CreateGroupForm({
+  defaultValue,
+  updateGroupId,
+  onOpenChange,
+}: {
+  defaultValue: string;
+  updateGroupId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "" },
+    defaultValues: { name: defaultValue || "" },
   });
   const queryClient = useQueryClient();
   const { user } = useUser();
   const { toast } = useToast();
   const { mutate, status } = useMutation<string, AxiosError>({
-    mutationFn: () => createGroup(user!.id, form.getValues("name")),
+    mutationFn: () => {
+      if (updateGroupId) {
+        return updateGroup(updateGroupId, user!.id, form.getValues("name"));
+      } else {
+        return createGroup(user!.id, form.getValues("name"));
+      }
+    },
     onSuccess: (message) => {
       queryClient.invalidateQueries({
         queryKey: ["groups"],
       });
-      form.reset();
+      form.reset({ name: "" });
 
       toast({
         description: message,
       });
+
+      if (updateGroupId) {
+        setTimeout(() => {
+          onOpenChange(false);
+        }, 1500);
+      }
     },
     onError: (error) => {
       const description =

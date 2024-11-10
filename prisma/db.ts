@@ -76,3 +76,22 @@ export async function readGroup(userId: string, name: string) {
     throw error;
   }
 }
+
+export async function updateGroup(groupId: string, name: string) {
+  try {
+    const group = await prismaClient.group.update({
+      where: {
+        id: groupId,
+      },
+      data: {
+        name,
+      },
+    });
+
+    return group;
+  } catch (error) {
+    console.error("Error updating group:", error);
+
+    throw error;
+  }
+}
