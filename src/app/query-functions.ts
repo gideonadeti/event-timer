@@ -31,3 +31,18 @@ export async function readEvents(userId: string) {
     throw error;
   }
 }
+
+export async function createGroup(userId: string, name: string) {
+  try {
+    const res = await axios.post(`/api/groups`, {
+      userId,
+      name,
+    });
+
+    return res.data.message;
+  } catch (error) {
+    console.error("Error creating group:", error);
+
+    throw error;
+  }
+}
