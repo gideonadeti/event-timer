@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readEvent, updateEvent, deleteEvent } from "../../../../../prisma/db";
+import { isEqual } from "date-fns";
 
 export async function PATCH(
   req: NextRequest,
@@ -23,8 +24,9 @@ export async function PATCH(
     if (
       event &&
       event.description === description.trim() &&
-      event.type === type &&
-      event.date === date
+      event.type === type.trim() &&
+      isEqual(event.date, new Date(date.trim())) &&
+      event.groupId === groupId.trim()
     ) {
       return NextResponse.json(
         {
@@ -34,11 +36,18 @@ export async function PATCH(
       );
     }
 
-    await updateEvent(eventId, title, description, type, date, groupId);
+    await updateEvent(
+      eventId,
+      title.trim(),
+      description.trim(),
+      type.trim(),
+      date.trim(),
+      groupId.trim()
+    );
 
     return NextResponse.json(
       {
-        message: "Event updated succcessfully",
+        message: "Event updated successfully",
       },
       {
         status: 200,
