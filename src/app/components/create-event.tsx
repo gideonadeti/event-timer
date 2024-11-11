@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
-import { format } from "date-fns";
+import { format, isBefore, isAfter, addDays, subDays } from "date-fns";
 import { AxiosError } from "axios";
 import { Group, Event } from "@prisma/client";
 import { useState } from "react";
@@ -91,7 +91,7 @@ function CreateEventForm({
     title: "",
     description: "",
     type: "countdown",
-    date: new Date(),
+    date: addDays(new Date(), 1),
     groupId: groups?.find((group) => group.name === "All")?.id || "",
   };
 
@@ -101,7 +101,7 @@ function CreateEventForm({
       title: event?.title || "",
       description: event?.description || "",
       type: event?.type || "countdown",
-      date: event?.date ? new Date(event.date) : new Date(),
+      date: addDays(new Date(), 1), // I tried using event?.date ?  new Date(event?.date) : new Date() but it doesn't work
       groupId:
         event?.groupId ||
         groups?.find((group) => group.name === "All")?.id ||
@@ -200,7 +200,12 @@ function CreateEventForm({
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  form.resetField("date", { defaultValue: new Date() });
+                  form.resetField("date", {
+                    defaultValue:
+                      value === "countdown"
+                        ? addDays(new Date(), 1)
+                        : subDays(new Date(), 1),
+                  });
                   setEventType(value);
                 }}
                 defaultValue={field.value}
@@ -277,8 +282,8 @@ function CreateEventForm({
                     onSelect={field.onChange}
                     disabled={(date) =>
                       eventType === "countdown"
-                        ? date < new Date()
-                        : date > new Date()
+                        ? isBefore(date, new Date())
+                        : isAfter(date, new Date())
                     }
                     initialFocus
                   />
