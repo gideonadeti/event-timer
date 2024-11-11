@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { Group, Event } from "@prisma/client";
 
 import { readGroups, readEvents } from "@/app/query-functions";
+import DataTable from "@/app/components/data-table/data-table";
+import { columns } from "@/app/components/data-table/columns";
 
 export default function Page() {
   const { user } = useUser();
@@ -19,10 +21,11 @@ export default function Page() {
     queryKey: ["groups"],
     queryFn: () => readGroups(user!.id),
   });
-  const { error: eventsError, status: eventsStatus } = useQuery<
-    Event[],
-    AxiosError
-  >({
+  const {
+    error: eventsError,
+    status: eventsStatus,
+    data: events,
+  } = useQuery<Event[], AxiosError>({
     queryKey: ["events"],
     queryFn: () => readEvents(user!.id),
   });
@@ -41,5 +44,9 @@ export default function Page() {
     }
   }, [groupsStatus, eventsStatus, groupsError, eventsError, toast]);
 
-  return <div></div>;
+  return (
+    <div className="px-2 py-4 md:px-4 lg:px-8">
+      {events && <DataTable columns={columns} data={events} />}
+    </div>
+  );
 }
