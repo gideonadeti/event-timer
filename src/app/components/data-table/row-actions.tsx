@@ -5,6 +5,8 @@ import { MoreHorizontal } from "lucide-react";
 import { Event } from "@prisma/client";
 import { useState } from "react";
 
+import CreateEvent from "../create-event";
+import DeleteEvent from "../delete-event";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateEvent from "../create-event";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -23,6 +24,8 @@ export default function RowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+
   const event = row.original as Event;
 
   return (
@@ -41,13 +44,21 @@ export default function RowActions<TData>({
           Update
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Delete</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setOpenDelete(true)}>
+          Delete
+        </DropdownMenuItem>
       </DropdownMenuContent>
 
       <CreateEvent
         open={openUpdate}
         onOpenChange={setOpenUpdate}
         event={event}
+      />
+
+      <DeleteEvent
+        open={openDelete}
+        onOpenChange={setOpenDelete}
+        eventId={event.id}
       />
     </DropdownMenu>
   );

@@ -89,7 +89,7 @@ export default function DateDisplay({
 
   return (
     <div className="flex items-center">
-      {formatDistanceToNowStrict(date)}{" "}
+      about {formatDistanceToNowStrict(date)}{" "}
       {type === "countdown" ? "left" : "passed"}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger>

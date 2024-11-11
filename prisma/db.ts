@@ -184,3 +184,17 @@ export async function updateEvent(
     throw error;
   }
 }
+
+export async function deleteEvent(eventId: string) {
+  try {
+    await prismaClient.event.delete({
+      where: {
+        id: eventId,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting event", error);
+
+    throw error;
+  }
+}

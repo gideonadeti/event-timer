@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 import { useToast } from "@/hooks/use-toast";
-import { deleteGroup } from "@/app/query-functions";
+import { deleteEvent } from "@/app/query-functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,19 +14,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function DeleteGroup({
+export default function DeleteEvent({
   open,
   onOpenChange,
-  deleteGroupId,
+  eventId,
 }: {
-  deleteGroupId: string;
+  eventId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { mutate, status } = useMutation<string, AxiosError>({
-    mutationFn: () => deleteGroup(deleteGroupId),
+    mutationFn: () => deleteEvent(eventId),
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
@@ -57,11 +57,10 @@ export default function DeleteGroup({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Are you sure you want to delete this group?
+            Are you sure you want to delete this event?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone, and all events in this group will be
-            deleted.
+            Note that this action cannot be undone!
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -123,7 +123,19 @@ export async function updateEvent(
 
     return res.data.message;
   } catch (error) {
-    console.error(error);
+    console.error("Error updating event", error);
+
+    throw error;
+  }
+}
+
+export async function deleteEvent(eventId: string) {
+  try {
+    const res = await axios.delete(`/api/events/${eventId}`);
+
+    return res.data.message;
+  } catch (error) {
+    console.error("Error deleting event:", error);
 
     throw error;
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readEvent, updateEvent } from "../../../../../prisma/db";
+import { readEvent, updateEvent, deleteEvent } from "../../../../../prisma/db";
 
 export async function PATCH(
   req: NextRequest,
@@ -49,6 +49,29 @@ export async function PATCH(
 
     return NextResponse.json(
       { error: "Something went wrong while updating event" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ eventId: string }> }
+) {
+  const { eventId } = await params;
+
+  try {
+    await deleteEvent(eventId);
+
+    return NextResponse.json(
+      { message: "Event deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting event:", error);
+
+    return NextResponse.json(
+      { error: "Something went wrong while deleting event" },
       { status: 500 }
     );
   }
