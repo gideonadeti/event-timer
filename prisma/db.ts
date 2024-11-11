@@ -154,3 +154,33 @@ export async function readEvent(title: string, groupId: string) {
     throw error;
   }
 }
+
+export async function updateEvent(
+  eventId: string,
+  title: string,
+  description: string,
+  type: Types,
+  date: Date,
+  groupId: string
+) {
+  try {
+    const event = await prismaClient.event.update({
+      where: {
+        id: eventId,
+      },
+      data: {
+        title,
+        description,
+        type,
+        date,
+        groupId,
+      },
+    });
+
+    return event;
+  } catch (error) {
+    console.error("Error updating event", error);
+
+    throw error;
+  }
+}

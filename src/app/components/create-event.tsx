@@ -9,7 +9,7 @@ import { Group, Event } from "@prisma/client";
 import { useState } from "react";
 
 import { useToast } from "@/hooks/use-toast";
-import { createEvent } from "@/app/query-functions";
+import { createEvent, updateEvent } from "@/app/query-functions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -54,24 +54,31 @@ const formSchema = z.object({
 export default function CreateEvent({
   open,
   onOpenChange,
+  event,
 }: {
-  task?: Event;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  event?: Event;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Event</DialogTitle>
+          <DialogTitle>{event ? "Update Event" : "Create Event"}</DialogTitle>
         </DialogHeader>
-        <CreateEventForm />
+        <CreateEventForm event={event} onOpenChange={onOpenChange} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function CreateEventForm() {
+function CreateEventForm({
+  event,
+  onOpenChange,
+}: {
+  event?: Event;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { data: groups } = useQuery<Group[]>({ queryKey: ["groups"] });
   const { user } = useUser();
   const { toast } = useToast();
@@ -79,35 +86,63 @@ function CreateEventForm() {
   const [eventType, setEventType] = useState("countdown");
 
   const queryClient = useQueryClient();
+
+  const resetValues = {
+    title: "",
+    description: "",
+    type: "countdown",
+    date: new Date(),
+    groupId: groups?.find((group) => group.name === "All")?.id || "",
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      type: "countdown",
-      date: new Date(),
-      groupId: groups?.find((group) => group.name === "All")?.id || "",
+      title: event?.title || "",
+      description: event?.description || "",
+      type: event?.type || "countdown",
+      date: event?.date || new Date(),
+      groupId:
+        event?.groupId ||
+        groups?.find((group) => group.name === "All")?.id ||
+        "",
     },
   });
 
   const { mutate, status } = useMutation<string, AxiosError>({
-    mutationFn: () =>
-      createEvent(
-        form.getValues("title"),
-        form.getValues("description"),
-        form.getValues("type"),
-        form.getValues("date"),
-        form.getValues("groupId"),
-        user!.id
-      ),
+    mutationFn: () => {
+      if (event) {
+        return updateEvent(
+          event.id,
+          form.getValues("title"),
+          form.getValues("description"),
+          form.getValues("type"),
+          form.getValues("date"),
+          form.getValues("groupId")
+        );
+      } else {
+        return createEvent(
+          form.getValues("title"),
+          form.getValues("description"),
+          form.getValues("type"),
+          form.getValues("date"),
+          form.getValues("groupId"),
+          user!.id
+        );
+      }
+    },
     onSuccess: (message) => {
       queryClient.invalidateQueries({
         queryKey: ["events"],
       });
       queryClient.invalidateQueries({ queryKey: ["groups"] });
-      form.reset();
+      form.reset(resetValues);
 
       toast({ description: message });
+
+      if (event) {
+        onOpenChange(false);
+      }
     },
     onError: (error) => {
       const description =
@@ -165,7 +200,7 @@ function CreateEventForm() {
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  form.resetField("date");
+                  form.resetField("date", { defaultValue: new Date() });
                   setEventType(value);
                 }}
                 defaultValue={field.value}

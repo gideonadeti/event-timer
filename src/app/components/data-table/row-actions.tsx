@@ -3,6 +3,7 @@
 import { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Event } from "@prisma/client";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateEvent from "../create-event";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -20,9 +22,8 @@ interface DataTableRowActionsProps<TData> {
 export default function RowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
+  const [openUpdate, setOpenUpdate] = useState(false);
   const event = row.original as Event;
-
-  console.log(event);
 
   return (
     <DropdownMenu>
@@ -36,10 +37,18 @@ export default function RowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setOpenUpdate(true)}>
+          Update
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Delete</DropdownMenuItem>
       </DropdownMenuContent>
+
+      <CreateEvent
+        open={openUpdate}
+        onOpenChange={setOpenUpdate}
+        event={event}
+      />
     </DropdownMenu>
   );
 }

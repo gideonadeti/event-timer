@@ -103,3 +103,28 @@ export async function createEvent(
     throw error;
   }
 }
+
+export async function updateEvent(
+  eventId: string,
+  title: string,
+  description: string,
+  type: string,
+  date: Date,
+  groupId: string
+) {
+  try {
+    const res = await axios.patch(`/api/events/${eventId}`, {
+      title,
+      description,
+      type,
+      date,
+      groupId,
+    });
+
+    return res.data.message;
+  } catch (error) {
+    console.error(error);
+
+    throw error;
+  }
+}
