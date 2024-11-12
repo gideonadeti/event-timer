@@ -109,6 +109,11 @@ function CreateEventForm({
     },
   });
 
+  // They weren't working because whenever you opened the calender, it disabled the past
+  // So if a user selected count up, it'll be disabled
+  // Also if the user selected a date in the past that will also be disabled so they can't
+  // Update to a date in the past unless they change the type causing the date to be reset
+
   const { mutate, status } = useMutation<string, AxiosError>({
     mutationFn: () => {
       if (event) {
