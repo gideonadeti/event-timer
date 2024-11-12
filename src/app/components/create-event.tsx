@@ -100,11 +100,8 @@ function CreateEventForm({
     defaultValues: {
       title: event?.title || "",
       description: event?.description || "",
-      type: event?.type || "countdown",
-      date:
-        event?.type === "countdown"
-          ? addDays(new Date(), 1)
-          : subDays(new Date(), 1), // I tried using event?.date ?  new Date(event?.date) : new Date() but it doesn't work
+      type: "countdown", // I tried using event?.type || "countdown" but it doesn't work
+      date: addDays(new Date(), 1), // I tried using event?.date ?  new Date(event?.date) : new Date() but it doesn't work
       groupId:
         event?.groupId ||
         groups?.find((group) => group.name === "All")?.id ||
