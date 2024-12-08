@@ -154,9 +154,13 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarGroup className="flex flex-row items-center justify-between">
+        <SidebarGroup className="flex flex-row items-center justify-between space-x-4">
           <ThemeToggler />
-          <Button variant="outline" onClick={() => setOpenCreateEvent(true)}>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setOpenCreateEvent(true)}
+          >
             Create Event
           </Button>
         </SidebarGroup>
